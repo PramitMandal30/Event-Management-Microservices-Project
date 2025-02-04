@@ -8,6 +8,8 @@ class ConfigServerApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// This test verifies that the Config Server application context loads without errors.
+        // No additional implementation is needed for this basic sanity check.
 	}
 
 }

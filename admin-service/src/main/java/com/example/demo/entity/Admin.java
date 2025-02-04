@@ -7,11 +7,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "admin")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Admin {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

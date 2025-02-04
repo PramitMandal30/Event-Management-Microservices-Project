@@ -20,6 +20,9 @@ public interface EventClient {
 
 	@GetMapping("/events")
 	public ResponseEntity<List<Event>> getAllEvents();
+	
+	@GetMapping("events/{id}")
+	public ResponseEntity<Event> getEventById(@PathVariable int id);
 
 	@PostMapping("/events")
 	ResponseEntity<Event> saveEvent(@RequestBody Event event);

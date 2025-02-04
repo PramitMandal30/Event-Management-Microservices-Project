@@ -10,11 +10,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "events")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Event {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,6 +8,8 @@ class ApiGatewayApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// This test method is intentionally left empty.
+        // It ensures that the Spring application context loads successfully.
 	}
 
 }

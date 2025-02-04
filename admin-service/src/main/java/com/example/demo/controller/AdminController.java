@@ -18,6 +18,7 @@ import com.example.demo.entity.Booking;
 import com.example.demo.entity.Event;
 import com.example.demo.entity.UserWrapper;
 import com.example.demo.exception.AdminNotFoundException;
+import com.example.demo.exception.EventNotFoundException;
 import com.example.demo.feign.BookingClient;
 import com.example.demo.feign.EventClient;
 import com.example.demo.feign.UserClient;
@@ -25,20 +26,32 @@ import com.example.demo.service.AdminService;
 
 import jakarta.validation.Valid;
 
+/**
+ * REST controller for admin-related operations.
+ */
 @RestController
 @RequestMapping("/admins")
 public class AdminController {
 
+	/**
+	 * Message template for admin not found exceptions.
+	 */
 	String message = "Admin not found with id: ";
 
 	private AdminService adminService;
-
 	private EventClient eventClient;
-
 	private BookingClient bookingClient;
-
 	private UserClient userClient;
 
+	/**
+	 * Constructs an instance of {@code AdminController} with the specified services
+	 * and clients.
+	 *
+	 * @param adminService  The admin service for managing admin data.
+	 * @param eventClient   The Feign client for event-related operations.
+	 * @param bookingClient The Feign client for booking-related operations.
+	 * @param userClient    The Feign client for user-related operations.
+	 */
 	public AdminController(AdminService adminService, EventClient eventClient, BookingClient bookingClient,
 			UserClient userClient) {
 		this.adminService = adminService;
@@ -47,13 +60,23 @@ public class AdminController {
 		this.userClient = userClient;
 	}
 
-	// get all
+	/**
+	 * Retrieves a list of all admins.
+	 *
+	 * @return A {@code ResponseEntity} containing a list of {@code Admin} objects.
+	 */
 	@GetMapping
 	public ResponseEntity<List<Admin>> getAllAdmins() {
 		return ResponseEntity.ok(adminService.getAll());
 	}
 
-	// get by Id
+	/**
+	 * Retrieves an admin by their ID.
+	 *
+	 * @param id The ID of the admin to retrieve.
+	 * @return A {@code ResponseEntity} containing the requested {@code Admin}.
+	 * @throws AdminNotFoundException If no admin is found with the specified ID.
+	 */
 	@GetMapping("/{id}")
 	public ResponseEntity<Admin> getAdminById(@PathVariable int id) throws AdminNotFoundException {
 		Admin admin = adminService.getById(id);
@@ -63,19 +86,31 @@ public class AdminController {
 		return ResponseEntity.ok(admin);
 	}
 
-	// add
+	/**
+	 * Saves a new admin.
+	 *
+	 * @param admin The {@code Admin} object to save.
+	 * @return A {@code ResponseEntity} containing the saved {@code Admin}.
+	 */
 	@PostMapping
 	public ResponseEntity<Admin> saveAdmin(@RequestBody @Valid Admin admin) {
 		adminService.save(admin);
 		return ResponseEntity.status(HttpStatus.CREATED).body(admin);
 	}
 
-	// update
+	/**
+	 * Updates an existing admin.
+	 *
+	 * @param id    The ID of the admin to update.
+	 * @param admin The updated {@code Admin} object.
+	 * @return A {@code ResponseEntity} containing the updated {@code Admin}.
+	 * @throws AdminNotFoundException If no admin is found with the specified ID.
+	 */
 	@PutMapping("/{id}")
 	public ResponseEntity<Admin> updateAdmin(@PathVariable int id, @RequestBody @Valid Admin admin)
 			throws AdminNotFoundException {
-		Admin adminOptional = adminService.getById(id);
-		if (adminOptional == null) {
+		Admin existingAdmin = adminService.getById(id);
+		if (existingAdmin == null) {
 			throw new AdminNotFoundException(message + id);
 		}
 		admin.setId(id);
@@ -83,7 +118,13 @@ public class AdminController {
 		return ResponseEntity.ok(admin);
 	}
 
-	// delete
+	/**
+	 * Deletes an admin by their ID.
+	 *
+	 * @param id The ID of the admin to delete.
+	 * @return A {@code ResponseEntity} with no content.
+	 * @throws AdminNotFoundException If no admin is found with the specified ID.
+	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteAdmin(@PathVariable int id) throws AdminNotFoundException {
 		Admin admin = adminService.getById(id);
@@ -94,48 +135,88 @@ public class AdminController {
 		return ResponseEntity.noContent().build();
 	}
 
-	// create an event
+	/**
+	 * Creates a new event.
+	 *
+	 * @param event The {@code Event} object to create.
+	 * @return A {@code ResponseEntity} containing the created {@code Event}.
+	 */
 	@PostMapping("/create-event")
 	public ResponseEntity<Event> createEvent(@RequestBody @Valid Event event) {
 		ResponseEntity<Event> response = eventClient.saveEvent(event);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response.getBody());
 	}
 
-	// update an event
+	/**
+	 * Updates an existing event.
+	 *
+	 * @param id    The ID of the event to update.
+	 * @param event The updated {@code Event} object.
+	 * @return A {@code ResponseEntity} containing the updated {@code Event}.
+	 * @throws EventNotFoundException If no event found with the specific ID
+	 */
 	@PutMapping("/update-event/{id}")
-	public ResponseEntity<Event> updateEvent(@PathVariable int id, @RequestBody @Valid Event event) {
+	public ResponseEntity<Event> updateEvent(@PathVariable int id, @RequestBody @Valid Event event)
+			throws EventNotFoundException {
+		Event existingEvent = eventClient.getEventById(id).getBody();
+		if (existingEvent == null) {
+			throw new EventNotFoundException("Event not found with id : " + id);
+		}
 		ResponseEntity<Event> response = eventClient.updateEvent(id, event);
 		return ResponseEntity.ok(response.getBody());
 	}
 
-	// delete an event
+	/**
+	 * Deletes an event by its ID and removes associated bookings.
+	 *
+	 * @param id The ID of the event to delete.
+	 * @return A {@code ResponseEntity} with no content.
+	 * @throws EventNotFoundException If no event found with the specific ID
+	 */
 	@DeleteMapping("/delete-event/{id}")
-	public ResponseEntity<Void> deleteEvent(@PathVariable int id) {
+	public ResponseEntity<Void> deleteEvent(@PathVariable int id) throws EventNotFoundException {
+		Event event = eventClient.getEventById(id).getBody();
+		if (event == null) {
+			throw new EventNotFoundException("Event not found with id : " + id);
+		}
 		eventClient.deleteEvent(id);
 		bookingClient.deleteBookingByEventId(id);
 		return ResponseEntity.noContent().build();
 	}
 
-	// get all events
+	/**
+	 * Retrieves a list of all events.
+	 *
+	 * @return A {@code ResponseEntity} containing a list of {@code Event} objects.
+	 */
 	@GetMapping("/get-events")
 	public ResponseEntity<List<Event>> getAllEvents() {
 		ResponseEntity<List<Event>> response = eventClient.getAllEvents();
 		return ResponseEntity.ok(response.getBody());
 	}
 
-	// get all bookings
+	/**
+	 * Retrieves a list of all bookings.
+	 *
+	 * @return A {@code ResponseEntity} containing a list of {@code Booking}
+	 *         objects.
+	 */
 	@GetMapping("/get-bookings")
 	public ResponseEntity<List<Booking>> getAllBookings() {
 		ResponseEntity<List<Booking>> response = bookingClient.getAllBookings();
 		return ResponseEntity.ok(response.getBody());
 	}
 
-	// get all registered users
+	/**
+	 * Retrieves a list of all registered users.
+	 *
+	 * @return A {@code ResponseEntity} containing a list of {@code UserWrapper}
+	 *         objects.
+	 */
 	@GetMapping("/get-all-users")
 	public ResponseEntity<List<UserWrapper>> getAllUsers() {
-		List<UserWrapper> user = userClient.getallUsersForAdmins().getBody();
-		return ResponseEntity.ok(user);
-
+		List<UserWrapper> users = userClient.getallUsersForAdmins().getBody();
+		return ResponseEntity.ok(users);
 	}
 
 }

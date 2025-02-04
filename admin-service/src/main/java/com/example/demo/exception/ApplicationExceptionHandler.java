@@ -26,5 +26,10 @@ public class ApplicationExceptionHandler {
 	public ResponseEntity<String> handleAdminNotFoundException(AdminNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
+	
+	@ExceptionHandler(EventNotFoundException.class)
+	public ResponseEntity<String> handleEventNotFoundException(EventNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
 
 }
