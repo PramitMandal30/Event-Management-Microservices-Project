@@ -143,14 +143,23 @@ public class UserController {
 
 	// get bookings for a particular user
 	@GetMapping("/user-id/{id}")
-	public ResponseEntity<List<Booking>> getEventForUserId(@PathVariable int id) {
+	public ResponseEntity<List<Booking>> getEventForUserId(@PathVariable int id) throws UserNotFoundException {
+		User user = userService.getById(id);
+		if (user == null) {
+			throw new UserNotFoundException(message + id);
+		}
 		ResponseEntity<List<Booking>> response = bookingClient.getBookingByUserId(id);
 		return ResponseEntity.ok(response.getBody());
 	}
 
 	// delete a particular booking for a user
 	@DeleteMapping("/user/{userId}/event/{eventId}")
-	public ResponseEntity<Void> deleteBookingForUser(@PathVariable int userId, @PathVariable int eventId) {
+	public ResponseEntity<Void> deleteBookingForUser(@PathVariable int userId, @PathVariable int eventId)
+			throws UserNotFoundException {
+		User user = userService.getById(userId);
+		if (user == null) {
+			throw new UserNotFoundException(message + userId);
+		}
 		bookingClient.deleteBookingByUserIdAndEventId(userId, eventId);
 		return ResponseEntity.noContent().build();
 	}
