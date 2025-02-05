@@ -11,16 +11,15 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepo;
 import com.example.demo.service.UserServiceImpl;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class UserServiceApplicationTests {
 
     @Mock

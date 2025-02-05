@@ -14,16 +14,15 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.demo.entity.Event;
 import com.example.demo.repository.EventRepo;
 import com.example.demo.service.EventServiceImpl;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class EventServiceApplicationTests {
 
 	@Mock
