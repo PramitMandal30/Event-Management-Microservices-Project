@@ -10,7 +10,7 @@ import com.example.demo.entity.Event;
 @Repository
 public interface EventRepo extends JpaRepository<Event, Integer> {
 
-	List<Event> findByNameContainingOrDescriptionContaining(String name, String description);
+	List<Event> findByNameContaining(String name);
 
 	List<Event> findByLocationContaining(String location);
 

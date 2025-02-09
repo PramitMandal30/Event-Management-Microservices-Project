@@ -76,13 +76,13 @@ class EventServiceApplicationTests {
 
 	@Test
 	void testGetByName() {
-		when(eventRepo.findByNameContainingOrDescriptionContaining("Event", "Event"))
+		when(eventRepo.findByNameContaining("Event"))
 				.thenReturn(Arrays.asList(event1, event2));
 
 		List<Event> events = eventService.getByName("Event");
 
 		assertEquals(2, events.size());
-		verify(eventRepo, times(1)).findByNameContainingOrDescriptionContaining("Event", "Event");
+		verify(eventRepo, times(1)).findByNameContaining("Event");
 	}
 
 	@Test

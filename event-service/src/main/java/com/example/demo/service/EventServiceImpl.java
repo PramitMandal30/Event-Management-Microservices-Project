@@ -28,7 +28,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	public List<Event> getByName(String keyword) {
-		return repo.findByNameContainingOrDescriptionContaining(keyword, keyword);
+		return repo.findByNameContaining(keyword);
 	}
 
 	public List<Event> getByLocation(String keyword) {
