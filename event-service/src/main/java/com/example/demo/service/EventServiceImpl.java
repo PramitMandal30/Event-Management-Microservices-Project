@@ -32,7 +32,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	public List<Event> getByLocation(String keyword) {
-		return repo.findByLocationContaining(keyword);
+		return repo.findByLocation(keyword);
 	}
 
 	public void update(Event event) {

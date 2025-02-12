@@ -87,13 +87,13 @@ class EventServiceApplicationTests {
 
 	@Test
 	void testGetByLocation() {
-		when(eventRepo.findByLocationContaining("Location One")).thenReturn(Arrays.asList(event1));
+		when(eventRepo.findByLocation("Location One")).thenReturn(Arrays.asList(event1));
 
 		List<Event> events = eventService.getByLocation("Location One");
 
 		assertEquals(1, events.size());
 		assertEquals("Event One", events.get(0).getName());
-		verify(eventRepo, times(1)).findByLocationContaining("Location One");
+		verify(eventRepo, times(1)).findByLocation("Location One");
 	}
 
 	@Test

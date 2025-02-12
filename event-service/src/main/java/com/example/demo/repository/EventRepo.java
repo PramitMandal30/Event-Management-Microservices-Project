@@ -12,6 +12,6 @@ public interface EventRepo extends JpaRepository<Event, Integer> {
 
 	List<Event> findByNameContaining(String name);
 
-	List<Event> findByLocationContaining(String location);
+	List<Event> findByLocation(String location);
 
 }

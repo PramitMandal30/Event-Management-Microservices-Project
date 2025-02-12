@@ -12,6 +12,9 @@ import com.example.demo.entity.Event;
 @FeignClient("EVENT-SERVICE")
 public interface EventClient {
 	
+	@GetMapping("/events")
+	public ResponseEntity<List<Event>> getAllEvents();
+	
 	@GetMapping("events/name/{keyword}")
 	public ResponseEntity<List<Event>> getAllEventsByName(@PathVariable String keyword);
 

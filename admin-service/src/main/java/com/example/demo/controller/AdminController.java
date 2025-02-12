@@ -158,8 +158,9 @@ public class AdminController {
 	@PutMapping("/update-event/{id}")
 	public ResponseEntity<Event> updateEvent(@PathVariable int id, @RequestBody @Valid Event event)
 			throws EventNotFoundException {
-		Event existingEvent = eventClient.getEventById(id).getBody();
-		if (existingEvent == null) {
+		try {
+			eventClient.getEventById(id).getBody();
+		} catch (Exception e) {
 			throw new EventNotFoundException("Event not found with id : " + id);
 		}
 		ResponseEntity<Event> response = eventClient.updateEvent(id, event);
@@ -175,8 +176,9 @@ public class AdminController {
 	 */
 	@DeleteMapping("/delete-event/{id}")
 	public ResponseEntity<Void> deleteEvent(@PathVariable int id) throws EventNotFoundException {
-		Event event = eventClient.getEventById(id).getBody();
-		if (event == null) {
+		try {
+			eventClient.getEventById(id).getBody();
+		} catch (Exception e) {
 			throw new EventNotFoundException("Event not found with id : " + id);
 		}
 		eventClient.deleteEvent(id);

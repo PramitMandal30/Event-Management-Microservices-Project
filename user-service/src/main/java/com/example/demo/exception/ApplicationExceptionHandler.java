@@ -31,6 +31,11 @@ public class ApplicationExceptionHandler {
 	public ResponseEntity<String> handleEventNotFoundException(EventNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
+	
+	@ExceptionHandler(BookingNotFoundException.class)
+	public ResponseEntity<String> handleBookingNotFoundException(BookingNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
 
 
 }
