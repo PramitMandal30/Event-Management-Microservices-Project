@@ -68,12 +68,14 @@ class AdminServiceApplicationTests {
 
     @Test
     void testUpdate() throws AdminNotFoundException {
+        when(adminRepo.existsById(admin1.getId())).thenReturn(true);
         adminService.update(admin1);
         verify(adminRepo, times(1)).save(admin1);
     }
 
     @Test
     void testDelete() throws AdminNotFoundException {
+        when(adminRepo.existsById(admin1.getId())).thenReturn(true);
         adminService.delete(admin1.getId());
         verify(adminRepo, times(1)).deleteById(admin1.getId());
     }

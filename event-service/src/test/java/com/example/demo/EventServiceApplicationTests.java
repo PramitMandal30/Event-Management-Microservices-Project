@@ -5,10 +5,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,14 +98,17 @@ class EventServiceApplicationTests {
 	}
 
 	@Test
-	void testUpdate() throws EventNotFoundException {
-		eventService.update(event1);
-		verify(eventRepo, times(1)).save(event1);
-	}
+    void testUpdate() throws EventNotFoundException {
+        when(eventRepo.existsById(event1.getId())).thenReturn(true);
+        eventService.update(event1);
+        verify(eventRepo, times(1)).save(event1);
+    }
 
-	@Test
-	void testDelete() throws EventNotFoundException {
-		eventService.delete(event1.getId());
-		verify(eventRepo, times(1)).deleteById(event1.getId());
-	}
+    @Test
+    void testDelete() throws EventNotFoundException {
+        when(eventRepo.existsById(event1.getId())).thenReturn(true);
+        eventService.delete(event1.getId());
+        verify(eventRepo, times(1)).deleteById(event1.getId());
+        
+    }
 }

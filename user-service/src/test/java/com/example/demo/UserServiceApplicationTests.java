@@ -68,12 +68,14 @@ class UserServiceApplicationTests {
 
     @Test
     void testUpdate() throws UserNotFoundException {
+    	when(userRepo.existsById(user1.getId())).thenReturn(true);
         userService.update(user1);
         verify(userRepo, times(1)).save(user1);
     }
 
     @Test
     void testDelete() throws UserNotFoundException {
+    	when(userRepo.existsById(user1.getId())).thenReturn(true);
         userService.delete(user1.getId());
         verify(userRepo, times(1)).deleteById(user1.getId());
     }
