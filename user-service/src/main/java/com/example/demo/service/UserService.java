@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.List;
 
 import com.example.demo.entity.User;
+import com.example.demo.exception.UserNotFoundException;
 
 public interface UserService {
 
@@ -10,10 +11,10 @@ public interface UserService {
 
 	List<User> getAll();
 
-	User getById(Integer id);
+	User getById(Integer id) throws UserNotFoundException;
 
-	void update(User user);
+	void update(User user) throws UserNotFoundException;
 
-	void delete(Integer id);
+	void delete(Integer id) throws UserNotFoundException;
 
 }

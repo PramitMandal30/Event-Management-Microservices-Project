@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.List;
 
 import com.example.demo.entity.Event;
+import com.example.demo.exception.EventNotFoundException;
 
 public interface EventService {
 
@@ -10,14 +11,14 @@ public interface EventService {
 
 	List<Event> getAll();
 
-	Event getById(Integer id);
+	Event getById(Integer id) throws EventNotFoundException;
 
-	List<Event> getByName(String keyword);
+	List<Event> getByName(String keyword) throws EventNotFoundException;
 
-	List<Event> getByLocation(String keyword);
+	List<Event> getByLocation(String keyword) throws EventNotFoundException;
 
-	void update(Event event);
+	void update(Event event) throws EventNotFoundException;
 
-	void delete(Integer id);
+	void delete(Integer id) throws EventNotFoundException;
 
 }

@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.demo.entity.User;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.UserRepo;
 import com.example.demo.service.UserServiceImpl;
 
@@ -56,7 +57,7 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    void testGetById() {
+    void testGetById() throws UserNotFoundException {
         when(userRepo.findById(user1.getId())).thenReturn(Optional.of(user1));
 
         User result = userService.getById(user1.getId());
@@ -66,13 +67,13 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    void testUpdate() {
+    void testUpdate() throws UserNotFoundException {
         userService.update(user1);
         verify(userRepo, times(1)).save(user1);
     }
 
     @Test
-    void testDelete() {
+    void testDelete() throws UserNotFoundException {
         userService.delete(user1.getId());
         verify(userRepo, times(1)).deleteById(user1.getId());
     }

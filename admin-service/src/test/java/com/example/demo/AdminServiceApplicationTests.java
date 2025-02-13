@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.demo.entity.Admin;
+import com.example.demo.exception.AdminNotFoundException;
 import com.example.demo.repository.AdminRepo;
 import com.example.demo.service.AdminServiceImpl;
 
@@ -56,7 +57,7 @@ class AdminServiceApplicationTests {
     }
 
     @Test
-    void testGetById() {
+    void testGetById() throws AdminNotFoundException {
         when(adminRepo.findById(admin1.getId())).thenReturn(Optional.of(admin1));
 
         Admin result = adminService.getById(admin1.getId());
@@ -66,13 +67,13 @@ class AdminServiceApplicationTests {
     }
 
     @Test
-    void testUpdate() {
+    void testUpdate() throws AdminNotFoundException {
         adminService.update(admin1);
         verify(adminRepo, times(1)).save(admin1);
     }
 
     @Test
-    void testDelete() {
+    void testDelete() throws AdminNotFoundException {
         adminService.delete(admin1.getId());
         verify(adminRepo, times(1)).deleteById(admin1.getId());
     }

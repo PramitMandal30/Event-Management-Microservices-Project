@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.User;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.UserRepo;
 
 /**
@@ -13,6 +14,11 @@ import com.example.demo.repository.UserRepo;
  */
 @Service
 public class UserServiceImpl implements UserService {
+	
+	/**
+	 * Message template for user not found exceptions.
+	 */
+	private String message = "User not found with id : ";
 
     private UserRepo repo;
 
@@ -48,17 +54,22 @@ public class UserServiceImpl implements UserService {
      *
      * @param id The ID of the user to retrieve.
      * @return The {@code User} entity if found, or {@code null} if not found.
+     * @throws UserNotFoundException 
      */
-    public User getById(Integer id) {
-        return repo.findById(id).orElse(null);
+    public User getById(Integer id) throws UserNotFoundException {
+        return repo.findById(id).orElseThrow(()->new UserNotFoundException(message + id));
     }
 
     /**
      * Updates an existing user entity in the repository.
      *
      * @param user The {@code User} entity with updated information.
+     * @throws UserNotFoundException 
      */
-    public void update(User user) {
+    public void update(User user) throws UserNotFoundException {
+    	if (!repo.existsById(user.getId())) {
+            throw new UserNotFoundException(message + user.getId());
+        }
         repo.save(user);
     }
 
@@ -66,8 +77,12 @@ public class UserServiceImpl implements UserService {
      * Deletes a user entity from the repository by its ID.
      *
      * @param id The ID of the user to delete.
+     * @throws UserNotFoundException 
      */
-    public void delete(Integer id) {
+    public void delete(Integer id) throws UserNotFoundException {
+    	if(!repo.existsById(id)) {
+    		throw new UserNotFoundException(message + id);
+    	}
         repo.deleteById(id);
     }
 }

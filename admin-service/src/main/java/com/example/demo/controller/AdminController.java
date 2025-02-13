@@ -33,11 +33,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/admins")
 public class AdminController {
 
-	/**
-	 * Message template for admin not found exceptions.
-	 */
-	String message = "Admin not found with id: ";
-
 	private AdminService adminService;
 	private EventClient eventClient;
 	private BookingClient bookingClient;
@@ -80,9 +75,6 @@ public class AdminController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Admin> getAdminById(@PathVariable int id) throws AdminNotFoundException {
 		Admin admin = adminService.getById(id);
-		if (admin == null) {
-			throw new AdminNotFoundException(message + id);
-		}
 		return ResponseEntity.ok(admin);
 	}
 
@@ -109,10 +101,6 @@ public class AdminController {
 	@PutMapping("/{id}")
 	public ResponseEntity<Admin> updateAdmin(@PathVariable int id, @RequestBody @Valid Admin admin)
 			throws AdminNotFoundException {
-		Admin existingAdmin = adminService.getById(id);
-		if (existingAdmin == null) {
-			throw new AdminNotFoundException(message + id);
-		}
 		admin.setId(id);
 		adminService.update(admin);
 		return ResponseEntity.ok(admin);
@@ -127,10 +115,6 @@ public class AdminController {
 	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteAdmin(@PathVariable int id) throws AdminNotFoundException {
-		Admin admin = adminService.getById(id);
-		if (admin == null) {
-			throw new AdminNotFoundException(message + id);
-		}
 		adminService.delete(id);
 		return ResponseEntity.noContent().build();
 	}

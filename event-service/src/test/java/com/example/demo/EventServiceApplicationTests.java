@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.demo.entity.Event;
+import com.example.demo.exception.EventNotFoundException;
 import com.example.demo.repository.EventRepo;
 import com.example.demo.service.EventServiceImpl;
 
@@ -65,7 +66,7 @@ class EventServiceApplicationTests {
 	}
 
 	@Test
-	void testGetById() {
+	void testGetById() throws EventNotFoundException {
 		when(eventRepo.findById(event1.getId())).thenReturn(Optional.of(event1));
 
 		Event result = eventService.getById(event1.getId());
@@ -75,7 +76,7 @@ class EventServiceApplicationTests {
 	}
 
 	@Test
-	void testGetByName() {
+	void testGetByName() throws EventNotFoundException {
 		when(eventRepo.findByNameContaining("Event"))
 				.thenReturn(Arrays.asList(event1, event2));
 
@@ -86,7 +87,7 @@ class EventServiceApplicationTests {
 	}
 
 	@Test
-	void testGetByLocation() {
+	void testGetByLocation() throws EventNotFoundException {
 		when(eventRepo.findByLocation("Location One")).thenReturn(Arrays.asList(event1));
 
 		List<Event> events = eventService.getByLocation("Location One");
@@ -97,13 +98,13 @@ class EventServiceApplicationTests {
 	}
 
 	@Test
-	void testUpdate() {
+	void testUpdate() throws EventNotFoundException {
 		eventService.update(event1);
 		verify(eventRepo, times(1)).save(event1);
 	}
 
 	@Test
-	void testDelete() {
+	void testDelete() throws EventNotFoundException {
 		eventService.delete(event1.getId());
 		verify(eventRepo, times(1)).deleteById(event1.getId());
 	}

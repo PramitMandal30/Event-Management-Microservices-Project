@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Admin;
+import com.example.demo.exception.AdminNotFoundException;
 import com.example.demo.repository.AdminRepo;
 
 /**
@@ -13,6 +14,11 @@ import com.example.demo.repository.AdminRepo;
  */
 @Service
 public class AdminServiceImpl implements AdminService {
+
+	/**
+	 * Message template for admin not found exceptions.
+	 */
+	String message = "Admin not found with id : ";
 
     private AdminRepo repo;
 
@@ -48,17 +54,22 @@ public class AdminServiceImpl implements AdminService {
      *
      * @param id The ID of the admin to retrieve.
      * @return The {@code Admin} entity if found, or {@code null} if not found.
+     * @throws AdminNotFoundException 
      */
-    public Admin getById(Integer id) {
-        return repo.findById(id).orElse(null);
+    public Admin getById(Integer id) throws AdminNotFoundException {
+        return repo.findById(id).orElseThrow(()->new AdminNotFoundException(message + id));
     }
 
     /**
      * Updates an existing admin entity in the repository.
      *
      * @param admin The {@code Admin} entity with updated information.
+     * @throws AdminNotFoundException 
      */
-    public void update(Admin admin) {
+    public void update(Admin admin) throws AdminNotFoundException {
+    	if(!repo.existsById(admin.getId())) {
+    		throw new AdminNotFoundException(message + admin.getId());
+    	}
         repo.save(admin);
     }
 
@@ -66,8 +77,12 @@ public class AdminServiceImpl implements AdminService {
      * Deletes an admin entity from the repository by its ID.
      *
      * @param id The ID of the admin to delete.
+     * @throws AdminNotFoundException 
      */
-    public void delete(Integer id) {
+    public void delete(Integer id) throws AdminNotFoundException {
+    	if(!repo.existsById(id)) {
+    		throw new AdminNotFoundException(message + id);
+    	}
         repo.deleteById(id);
     }
 

@@ -34,11 +34,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/users")
 public class UserController {
 
-	/**
-	 * Message template for user not found exceptions.
-	 */
-	private String message = "User not found with id: ";
-
 	private UserService userService;
 	private EventClient eventClient;
 	private BookingClient bookingClient;
@@ -93,9 +88,6 @@ public class UserController {
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@PathVariable int id) throws UserNotFoundException {
 		User user = userService.getById(id);
-		if (user == null) {
-			throw new UserNotFoundException(message + id);
-		}
 		return ResponseEntity.ok(user);
 	}
 
@@ -122,10 +114,6 @@ public class UserController {
 	@PutMapping("/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody @Valid User user)
 			throws UserNotFoundException {
-		User existingUser = userService.getById(id);
-		if (existingUser == null) {
-			throw new UserNotFoundException(message + id);
-		}
 		user.setId(id);
 		userService.update(user);
 		return ResponseEntity.ok(user);
@@ -140,10 +128,6 @@ public class UserController {
 	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable int id) throws UserNotFoundException {
-		User user = userService.getById(id);
-		if (user == null) {
-			throw new UserNotFoundException(message + id);
-		}
 		userService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
@@ -221,10 +205,6 @@ public class UserController {
 			throw new EventNotFoundException("Event not found with id " + eventId);
 		}
 
-		if (user == null) {
-			throw new UserNotFoundException(message + userId);
-		}
-
 		Booking booking = new Booking();
 		booking.setUserId(user.getId());
 		booking.setUserName(user.getName());
@@ -252,11 +232,8 @@ public class UserController {
 	@GetMapping("/user-id/{id}")
 	public ResponseEntity<List<Booking>> getEventForUserId(@PathVariable int id)
 			throws UserNotFoundException, BookingNotFoundException {
-		User user = userService.getById(id);
+		userService.getById(id);
 		List<Booking> booking = null;
-		if (user == null) {
-			throw new UserNotFoundException(message + id);
-		}
 		try {
 			booking = bookingClient.getBookingByUserId(id).getBody();
 		} catch (Exception e) {
@@ -277,15 +254,12 @@ public class UserController {
 	@DeleteMapping("/user/{userId}/event/{eventId}")
 	public ResponseEntity<Void> deleteBookingForUser(@PathVariable int userId, @PathVariable int eventId)
 			throws EventNotFoundException, UserNotFoundException {
-		User user = userService.getById(userId);
+		userService.getById(userId);
 		try {
 			eventClient.getEventById(eventId).getBody();
 		} catch (Exception e) {
 
 			throw new EventNotFoundException("Event not found with id " + eventId);
-		}
-		if (user == null) {
-			throw new UserNotFoundException(message + userId);
 		}
 		bookingClient.deleteBookingByUserIdAndEventId(userId, eventId);
 		return ResponseEntity.noContent().build();
