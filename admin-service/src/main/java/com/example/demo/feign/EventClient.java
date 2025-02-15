@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.example.demo.entity.Event;
+import com.example.demo.dto.Event;
 
 import jakarta.validation.Valid;
 

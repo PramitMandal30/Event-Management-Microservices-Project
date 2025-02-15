@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -14,15 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.entity.Booking;
-import com.example.demo.entity.Event;
+import com.example.demo.dto.Booking;
+import com.example.demo.dto.Event;
+import com.example.demo.dto.UserWrapper;
 import com.example.demo.entity.User;
-import com.example.demo.entity.UserWrapper;
 import com.example.demo.exception.BookingNotFoundException;
 import com.example.demo.exception.EventNotFoundException;
 import com.example.demo.exception.UserNotFoundException;
-import com.example.demo.feign.BookingClient;
-import com.example.demo.feign.EventClient;
 import com.example.demo.service.UserService;
 
 import jakarta.validation.Valid;
@@ -35,8 +32,6 @@ import jakarta.validation.Valid;
 public class UserController {
 
 	private UserService userService;
-	private EventClient eventClient;
-	private BookingClient bookingClient;
 
 	/**
 	 * Constructs a {@code UserController} with the specified services and clients.
@@ -45,10 +40,8 @@ public class UserController {
 	 * @param eventClient   The Feign client for event-related operations.
 	 * @param bookingClient The Feign client for booking-related operations.
 	 */
-	public UserController(UserService userService, EventClient eventClient, BookingClient bookingClient) {
+	public UserController(UserService userService) {
 		this.userService = userService;
-		this.eventClient = eventClient;
-		this.bookingClient = bookingClient;
 	}
 
 	/**
@@ -69,13 +62,8 @@ public class UserController {
 	 */
 	@GetMapping("/fetch")
 	public ResponseEntity<List<UserWrapper>> getallUsersForAdmins() {
-		List<User> users = userService.getAll();
-		List<UserWrapper> userWrappers = new ArrayList<>();
-		for (User user : users) {
-			UserWrapper userWrapper = new UserWrapper(user.getId(), user.getName(), user.getEmail(), user.getPhNo());
-			userWrappers.add(userWrapper);
-		}
-		return ResponseEntity.ok(userWrappers);
+		List<UserWrapper> user  = userService.getAllUsersForAdmins();
+		return ResponseEntity.ok(user);
 	}
 
 	/**
@@ -127,9 +115,9 @@ public class UserController {
 	 * @throws UserNotFoundException If no user is found with the specified ID.
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteUser(@PathVariable int id) throws UserNotFoundException {
-		userService.delete(id);
-		return ResponseEntity.noContent().build();
+	public ResponseEntity<String> deleteUser(@PathVariable int id) throws UserNotFoundException {
+		String response = userService.delete(id);
+		return ResponseEntity.ok(response);
 	}
 
 	/**
@@ -139,8 +127,8 @@ public class UserController {
 	 */
 	@GetMapping("/get-events")
 	public ResponseEntity<List<Event>> getAllEvents() {
-		ResponseEntity<List<Event>> response = eventClient.getAllEvents();
-		return ResponseEntity.ok(response.getBody());
+		List<Event> response = userService.getAllEvents();
+		return ResponseEntity.ok(response);
 	}
 
 	/**
@@ -153,13 +141,7 @@ public class UserController {
 	 */
 	@GetMapping("/search-name/{keyword}")
 	public ResponseEntity<List<Event>> searchEventByName(@PathVariable String keyword) throws EventNotFoundException {
-		List<Event> event = null;
-		try {
-			event = eventClient.getAllEventsByName(keyword).getBody();
-		} catch (Exception e) {
-
-			throw new EventNotFoundException("Event not found with name " + keyword);
-		}
+		List<Event> event = userService.getEventsByName(keyword);
 		return ResponseEntity.ok(event);
 	}
 
@@ -174,13 +156,7 @@ public class UserController {
 	@GetMapping("/search-location/{keyword}")
 	public ResponseEntity<List<Event>> searchEventsByLocation(@PathVariable String keyword)
 			throws EventNotFoundException {
-		List<Event> event = null;
-		try {
-			event = eventClient.getAllEventsByLocation(keyword).getBody();
-		} catch (Exception e) {
-
-			throw new EventNotFoundException("No events found in " + keyword);
-		}
+		List<Event> event = userService.getEventsByLocation(keyword);
 		return ResponseEntity.ok(event);
 	}
 
@@ -196,27 +172,8 @@ public class UserController {
 	@PostMapping("/{userId}/register-event/{eventId}")
 	public ResponseEntity<String> registerUserToEvent(@PathVariable int userId, @PathVariable int eventId)
 			throws UserNotFoundException, EventNotFoundException {
-		User user = userService.getById(userId);
-		Event event = null;
-		try {
-			event = eventClient.getEventById(eventId).getBody();
-		} catch (Exception e) {
-
-			throw new EventNotFoundException("Event not found with id " + eventId);
-		}
-
-		Booking booking = new Booking();
-		booking.setUserId(user.getId());
-		booking.setUserName(user.getName());
-		booking.setEventId(event.getId());
-		booking.setEventName(event.getName());
-		booking.setDate(event.getDate());
-		booking.setLocation(event.getLocation());
-		booking.setVenue(event.getVenue());
-
-		bookingClient.saveBooking(booking);
-
-		return ResponseEntity.ok("User registered to event successfully");
+		String response = userService.registerUserToEvent(userId, eventId);
+		return ResponseEntity.ok(response);
 	}
 
 	/**
@@ -230,15 +187,9 @@ public class UserController {
 	 *                                  user ID.
 	 */
 	@GetMapping("/user-id/{id}")
-	public ResponseEntity<List<Booking>> getEventForUserId(@PathVariable int id)
+	public ResponseEntity<List<Booking>> getBookingsForUserId(@PathVariable int id)
 			throws UserNotFoundException, BookingNotFoundException {
-		userService.getById(id);
-		List<Booking> booking = null;
-		try {
-			booking = bookingClient.getBookingByUserId(id).getBody();
-		} catch (Exception e) {
-			throw new BookingNotFoundException("No bookings found for user id " + id);
-		}
+		List<Booking> booking = userService.getBookingsForUserId(id);
 		return ResponseEntity.ok(booking);
 	}
 
@@ -252,17 +203,10 @@ public class UserController {
 	 * @throws UserNotFoundException  If no user is found with the specified ID.
 	 */
 	@DeleteMapping("/user/{userId}/event/{eventId}")
-	public ResponseEntity<Void> deleteBookingForUser(@PathVariable int userId, @PathVariable int eventId)
+	public ResponseEntity<String> deleteBookingForUser(@PathVariable int userId, @PathVariable int eventId)
 			throws EventNotFoundException, UserNotFoundException {
-		userService.getById(userId);
-		try {
-			eventClient.getEventById(eventId).getBody();
-		} catch (Exception e) {
-
-			throw new EventNotFoundException("Event not found with id " + eventId);
-		}
-		bookingClient.deleteBookingByUserIdAndEventId(userId, eventId);
-		return ResponseEntity.noContent().build();
+		String response = userService.cancelBooking(userId, eventId);
+		return ResponseEntity.ok(response);
 	}
 
 }
