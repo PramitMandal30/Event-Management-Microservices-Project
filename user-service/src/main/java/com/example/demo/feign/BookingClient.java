@@ -22,4 +22,7 @@ public interface BookingClient {
 
 	@DeleteMapping("/bookings/user/{userId}/event/{eventId}")
 	public ResponseEntity<Void> deleteBookingByUserIdAndEventId(@PathVariable int userId, @PathVariable int eventId);
+	
+	@DeleteMapping("/bookings/delete-booking-for-user/{userId}")
+	public ResponseEntity<Void> deleteBookingByUserId(@PathVariable int userId);
 }

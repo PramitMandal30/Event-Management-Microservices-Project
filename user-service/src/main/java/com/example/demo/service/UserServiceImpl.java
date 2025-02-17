@@ -113,6 +113,7 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(message + id);
         }
         repo.deleteById(id);
+        bookingClient.deleteBookingByUserId(id);
         return "User deleted successfully";
     }
 

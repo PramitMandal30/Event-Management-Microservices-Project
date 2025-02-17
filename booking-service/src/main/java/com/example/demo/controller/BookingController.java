@@ -71,6 +71,13 @@ public class BookingController {
 		bookingService.deleteByEventId(eventId);
 		return ResponseEntity.noContent().build();
 	}
+	
+	// delete all bookings for a particular user
+	@DeleteMapping("/delete-booking-for-user/{userId}")
+	public ResponseEntity<Void> deleteBookingByUserId(@PathVariable int userId){
+		bookingService.deleteByUserId(userId);
+		return ResponseEntity.noContent().build();
+	}
 
 	// delete booking for a particular user and a particular event
 	@DeleteMapping("/user/{userId}/event/{eventId}")
