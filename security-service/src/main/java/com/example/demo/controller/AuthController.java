@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.JWTResponse;
 import com.example.demo.entity.User;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.UserRepo;
@@ -28,7 +29,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin("*")
 public class AuthController {
 	
     private UserService service;
@@ -56,11 +56,11 @@ public class AuthController {
 
 
     @PostMapping("/authenticate")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+    public JWTResponse authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {
         	User obj = repo.findByName(authRequest.getUsername()).orElse(null);
-            return jwtService.generateToken(authRequest.getUsername(),obj.getRole(),obj.getId());
+            return new JWTResponse(obj.getId(),jwtService.generateToken(authRequest.getUsername(),obj.getRole()),obj.getRole());
         } else {
             throw new UsernameNotFoundException("invalid user request !");
         }
@@ -86,8 +86,8 @@ public class AuthController {
 	}
     
     @DeleteMapping("/delete/{id}")
-	public ResponseEntity<String> deleteUser(@PathVariable int id) throws UserNotFoundException {
+	public String deleteUser(@PathVariable int id) throws UserNotFoundException {
 		String response = service.delete(id);
-		return ResponseEntity.ok(response);
+		return response;
 	}
 }

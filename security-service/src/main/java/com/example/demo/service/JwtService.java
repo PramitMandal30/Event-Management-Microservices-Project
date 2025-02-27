@@ -46,9 +46,8 @@ public class JwtService {
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
-	public String generateToken(String userName, String roles , Integer id) {
+	public String generateToken(String userName, String roles) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("id", id);
 		claims.put("roles", roles);
 		System.out.println(claims);
 		return createToken(claims, userName);
