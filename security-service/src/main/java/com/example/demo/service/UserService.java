@@ -21,16 +21,6 @@ public interface UserService {
 
 	String delete(Integer id) throws UserNotFoundException;
 	
-	List<Event> getAllEvents();
-	
-	List<Event> getEventsByName(String keyword) throws EventNotFoundException;
-	
-	List<Event> getEventsByLocation(String keyword) throws EventNotFoundException;
-	
 	String registerUserToEvent(Integer userId , Integer eventId) throws UserNotFoundException, EventNotFoundException;
-	
-	List<Booking> getBookingsForUserId(Integer userId) throws BookingNotFoundException;
-	
-	String cancelBooking(Integer userId , Integer eventId) throws UserNotFoundException, EventNotFoundException;
 
 }

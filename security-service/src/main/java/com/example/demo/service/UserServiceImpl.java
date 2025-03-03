@@ -119,51 +119,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Retrieves all events using the EventClient.
-     *
-     * @return A list of {@code Event} entities.
-     */
-    public List<Event> getAllEvents() {
-        return eventClient.getAllEvents().getBody();
-    }
-
-    /**
-     * Retrieves events by their name using the EventClient.
-     *
-     * @param keyword The name keyword to search for.
-     * @return A list of {@code Event} entities matching the keyword.
-     * @throws EventNotFoundException if no events are found with the specified name.
-     */
-    @Override
-    public List<Event> getEventsByName(String keyword) throws EventNotFoundException {
-        List<Event> event;
-        try {
-            event = eventClient.getAllEventsByName(keyword).getBody();
-        } catch (Exception e) {
-            throw new EventNotFoundException("No events with name : " + keyword);
-        }
-        return event;
-    }
-
-    /**
-     * Retrieves events by their location using the EventClient.
-     *
-     * @param keyword The location keyword to search for.
-     * @return A list of {@code Event} entities matching the location.
-     * @throws EventNotFoundException if no events are found with the specified location.
-     */
-    @Override
-    public List<Event> getEventsByLocation(String keyword) throws EventNotFoundException {
-        List<Event> event;
-        try {
-            event = eventClient.getAllEventsByLocation(keyword).getBody();
-        } catch (Exception e) {
-            throw new EventNotFoundException("No events found at : " + keyword);
-        }
-        return event;
-    }
-
-    /**
      * Registers a user to an event.
      *
      * @param userId  The ID of the user.
@@ -193,45 +148,5 @@ public class UserServiceImpl implements UserService {
 
         bookingClient.saveBooking(booking);
         return "User " + user.getName() + " registered to event " + event.getName() + " successfully";
-    }
-
-    /**
-     * Retrieves bookings for a user by their ID.
-     *
-     * @param userId The ID of the user.
-     * @return A list of {@code Booking} entities for the user.
-     * @throws BookingNotFoundException if no bookings are found for the user.
-     */
-    @Override
-    public List<Booking> getBookingsForUserId(Integer userId) throws BookingNotFoundException {
-        List<Booking> booking;
-        try {
-            booking = bookingClient.getBookingByUserId(userId).getBody();
-        }catch(Exception e) {
-            throw new BookingNotFoundException("No bookings found for user " + userId);
-        }
-        return booking;
-    }
-
-    /**
-     * Cancels a booking for a user and event.
-     *
-     * @param userId  The ID of the user.
-     * @param eventId The ID of the event.
-     * @return A message indicating successful cancellation.
-     * @throws UserNotFoundException  if the user entity is not found.
-     * @throws EventNotFoundException if the event entity is not found.
-     */
-    @Override
-    public String cancelBooking(Integer userId, Integer eventId) throws UserNotFoundException, EventNotFoundException {
-        User user = getById(userId);
-        Event event;
-        try {
-            event = eventClient.getEventById(eventId).getBody();
-        }catch(Exception e) {
-            throw new EventNotFoundException("No events found with id : " + eventId);
-        }
-        bookingClient.deleteBookingByUserIdAndEventId(userId, eventId);
-        return "User " + user.getName() + " successfully cancelled booking for event " + event.getName();
     }
 }
