@@ -4,7 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.Event;
+import com.example.demo.dto.User;
 import com.example.demo.entity.Booking;
+import com.example.demo.feign.EventClient;
+import com.example.demo.feign.UserClient;
 import com.example.demo.repository.BookingRepository;
 
 import jakarta.transaction.Transactional;
@@ -13,14 +17,13 @@ import jakarta.transaction.Transactional;
 public class BookingServiceImpl implements BookingService {
 
 	private BookingRepository repository;
+	private EventClient eventClient;
+	private UserClient userClient;
 
-	public BookingServiceImpl(BookingRepository repository) {
+	public BookingServiceImpl(BookingRepository repository,EventClient eventClient,UserClient userClient) {
 		this.repository = repository;
-	}
-
-	@Override
-	public void save(Booking booking) {
-		repository.save(booking);
+		this.eventClient=eventClient;
+		this.userClient=userClient;
 	}
 
 	@Override
@@ -60,5 +63,21 @@ public class BookingServiceImpl implements BookingService {
 	public String deleteByUserIdAndEventId(int userId, int eventId) {
 		repository.deleteByUserIdAndEventId(userId, eventId);
 		return "Booking deleted successfully";
+	}
+
+	@Override
+	public String createBooking(Integer userId, Integer eventId) {
+		User user = userClient.getUserById(userId).getBody();
+		Event event = eventClient.getEventById(eventId).getBody();
+		Booking booking = new Booking();
+        booking.setUserId(user.getId());
+        booking.setUserName(user.getName());
+        booking.setEventId(event.getId());
+        booking.setEventName(event.getName());
+        booking.setDate(event.getDate());
+        booking.setLocation(event.getLocation());
+        booking.setVenue(event.getVenue());
+        repository.save(booking);
+        return "User " + user.getName() + " registered to event " + event.getName() + " successfully";
 	}
 }

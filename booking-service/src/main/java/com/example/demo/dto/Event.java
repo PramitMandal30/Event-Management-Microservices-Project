@@ -11,17 +11,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Booking {
+public class Event {
 
 	private int id;
 
-	private int userId;
-
-	private String userName;
-
-	private int eventId;
-
-	private String eventName;
+	private String name;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date date;
@@ -29,4 +23,7 @@ public class Booking {
 	private String location;
 
 	private String venue;
+
+	private String description;
+
 }

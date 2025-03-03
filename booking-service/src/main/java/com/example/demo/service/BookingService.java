@@ -5,7 +5,7 @@ import java.util.List;
 import com.example.demo.entity.Booking;
 
 public interface BookingService {
-	void save(Booking booking);
+	String createBooking(Integer userId,Integer eventId);
 
 	List<Booking> getAll();
 

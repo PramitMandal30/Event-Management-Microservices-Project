@@ -6,14 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.Booking;
-import com.example.demo.dto.Event;
 import com.example.demo.entity.User;
-import com.example.demo.exception.BookingNotFoundException;
-import com.example.demo.exception.EventNotFoundException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.feign.BookingClient;
-import com.example.demo.feign.EventClient;
 import com.example.demo.repository.UserRepo;
 
 /**
@@ -29,7 +24,6 @@ public class UserServiceImpl implements UserService {
     private String message = "User not found with id : ";
 
     private UserRepo repo;
-    private EventClient eventClient;
     private BookingClient bookingClient;
     
     @Autowired
@@ -41,9 +35,8 @@ public class UserServiceImpl implements UserService {
      *
      * @param repo The {@code UserRepo} used for data access operations.
      */
-    public UserServiceImpl(UserRepo repo, EventClient eventClient, BookingClient bookingClient) {
+    public UserServiceImpl(UserRepo repo, BookingClient bookingClient) {
         this.repo = repo;
-        this.eventClient = eventClient;
         this.bookingClient = bookingClient;
     }
 
@@ -116,37 +109,5 @@ public class UserServiceImpl implements UserService {
         repo.deleteById(id);
         bookingClient.deleteBookingByUserId(id);
         return "User deleted successfully";
-    }
-
-    /**
-     * Registers a user to an event.
-     *
-     * @param userId  The ID of the user.
-     * @param eventId The ID of the event.
-     * @return A message indicating successful registration.
-     * @throws UserNotFoundException  if the user entity is not found.
-     * @throws EventNotFoundException if the event entity is not found.
-     */
-    @Override
-    public String registerUserToEvent(Integer userId, Integer eventId)
-            throws UserNotFoundException, EventNotFoundException {
-        User user = getById(userId);
-        Event event;
-        try {
-            event = eventClient.getEventById(eventId).getBody();
-        } catch (Exception e) {
-            throw new EventNotFoundException("Event not found with id : " + eventId);
-        }
-        Booking booking = new Booking();
-        booking.setUserId(user.getId());
-        booking.setUserName(user.getName());
-        booking.setEventId(event.getId());
-        booking.setEventName(event.getName());
-        booking.setDate(event.getDate());
-        booking.setLocation(event.getLocation());
-        booking.setVenue(event.getVenue());
-
-        bookingClient.saveBooking(booking);
-        return "User " + user.getName() + " registered to event " + event.getName() + " successfully";
     }
 }

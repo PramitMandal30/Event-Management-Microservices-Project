@@ -26,10 +26,10 @@ public class BookingController {
 	}
 
 	// create a booking
-	@PostMapping
-	public ResponseEntity<Booking> saveBooking(@RequestBody Booking booking) {
-		bookingService.save(booking);
-		return ResponseEntity.status(HttpStatus.CREATED).body(booking);
+	@PostMapping("/user/{userId}/event/{eventId}")
+	public ResponseEntity<String> saveBooking(@PathVariable int userId , @PathVariable int eventId) {
+		String response = bookingService.createBooking(userId,eventId);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	// get all bookings
