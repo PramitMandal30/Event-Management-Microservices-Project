@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Event;
 import com.example.demo.exception.EventNotFoundException;
+import com.example.demo.feign.BookingClient;
 import com.example.demo.repository.EventRepo;
 
 @Service
@@ -14,9 +15,11 @@ public class EventServiceImpl implements EventService {
 	String message = "Event not present with id: ";
 
 	private EventRepo repo;
+	private BookingClient bookingClient;
 
-	public EventServiceImpl(EventRepo repo) {
+	public EventServiceImpl(EventRepo repo,BookingClient bookingClient) {
 		this.repo = repo;
+		this.bookingClient = bookingClient;
 	}
 
 	public void save(Event event) {
@@ -54,10 +57,12 @@ public class EventServiceImpl implements EventService {
 		repo.save(event);
 	}
 
-	public void delete(Integer id) throws EventNotFoundException {
+	public String delete(Integer id) throws EventNotFoundException {
 		if(!repo.existsById(id)) {
 			throw new EventNotFoundException(message + id);
 		}
 		repo.deleteById(id);
+        bookingClient.deleteBookingByEventId(id);
+        return "Event deleted successfully!!!";
 	}
 }

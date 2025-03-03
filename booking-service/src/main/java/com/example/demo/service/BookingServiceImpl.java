@@ -57,7 +57,8 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	@Transactional
-	public void deleteByUserIdAndEventId(int userId, int eventId) {
+	public String deleteByUserIdAndEventId(int userId, int eventId) {
 		repository.deleteByUserIdAndEventId(userId, eventId);
+		return "Booking deleted successfully";
 	}
 }

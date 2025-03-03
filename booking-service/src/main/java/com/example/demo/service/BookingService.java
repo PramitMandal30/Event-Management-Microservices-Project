@@ -19,5 +19,5 @@ public interface BookingService {
 
 	void deleteByUserId(int userId);
 
-	void deleteByUserIdAndEventId(int userId, int eventId);
+	String deleteByUserIdAndEventId(int userId, int eventId);
 }

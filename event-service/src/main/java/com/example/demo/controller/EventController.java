@@ -78,10 +78,10 @@ public class EventController {
 
 	// delete
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteEvent(@PathVariable int id) throws EventNotFoundException {
+	public ResponseEntity<String> deleteEvent(@PathVariable int id) throws EventNotFoundException {
 		eventService.getById(id);
-		eventService.delete(id);
-		return ResponseEntity.noContent().build();
+		String response = eventService.delete(id);
+		return ResponseEntity.ok(response);
 	}
 
 }

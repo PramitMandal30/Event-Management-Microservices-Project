@@ -19,6 +19,6 @@ public interface EventService {
 
 	void update(Event event) throws EventNotFoundException;
 
-	void delete(Integer id) throws EventNotFoundException;
+	String delete(Integer id) throws EventNotFoundException;
 
 }
